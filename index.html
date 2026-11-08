@@ -1,0 +1,741 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Тетрадь «Слоги»</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap">
+<style>
+/* Layout: a cheerful notebook pinned to the BOTTOM of the screen (children reach it on a board), owl helper and all buttons in a bottom bar, ruled rows of round chunky letters. Light only. */
+:root{
+  color-scheme:light;
+  --sky1:#d9efff;
+  --sky2:#fff3d1;
+  --paper:#ffffff;
+  --line:#9cc3ea;
+  --line-soft:#dbe9f7;
+  --margin:#ff8f8f;
+  --ink:#1d2b5e;        /* letters: dark navy */
+  --text:#2a3558;
+  --muted:#6d7896;
+  --red:#e5384f;
+  --green:#21a35a;
+  --sep:#16a34a;        /* syllable divider */
+  --stress:#8b3fd9;     /* stress mark */
+  --sun:#ffc93c;
+  --sun-dark:#a86b00;
+  --blue:#4f8cff;
+  --mint:#d5f5e3;
+  --lilac:#efe3ff;
+  --rose:#ffe3e8;
+  --cloud:#eef2f8;
+  --lemon:#fff2c2;
+  --shadow:0 2px 0 rgba(29,43,94,.06),0 10px 26px -14px rgba(29,43,94,.4);
+  --round:"Nunito","Varela Round","Segoe UI",system-ui,sans-serif;
+  --fs:44px;                       /* letter size; script fits it to the screen */
+  --L:calc(var(--fs) * 1.5);       /* letter line */
+  --U:26px;                        /* small line under the word for marks */
+  --desc:.36;                      /* measured by script */
+  --base:calc(var(--L) - var(--fs) * var(--desc));
+  --top:calc(var(--base) - var(--fs) * .9);
+  --barH:80px;                     /* measured by script */
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{height:100%}
+body{margin:0;min-height:100%;display:flex;flex-direction:column;color:var(--text);font-family:var(--round);font-size:15px;
+  background-color:var(--sky1);
+  background-image:radial-gradient(circle at 20px 20px,rgba(255,255,255,.7) 2.5px,transparent 3px),linear-gradient(180deg,var(--sky1),var(--sky2));
+  background-size:46px 46px,100% 100%;background-attachment:fixed;
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));
+  padding-top:10px;padding-bottom:calc(var(--barH) + 10px)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--sky1)}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.wrap{flex:1;width:100%;display:flex;flex-direction:column;gap:8px}
+
+/* cover */
+.cover{background-color:var(--blue);background-image:radial-gradient(rgba(255,255,255,.22) 3px,transparent 3.5px);background-size:22px 22px;
+  color:#fff;border-radius:20px;padding:8px 12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;box-shadow:var(--shadow)}
+.cover h1{margin:0;font-weight:900;font-size:26px;letter-spacing:.01em;display:flex;align-items:center;gap:8px;text-shadow:0 2px 0 rgba(0,0,0,.15)}
+.cover h1 svg{width:28px;height:28px;flex:none}
+.who{display:flex;align-items:center;gap:8px;background:#fff;color:var(--muted);border-radius:999px;padding:4px 6px 4px 14px;font-weight:700;font-size:14px}
+.who input{border:0;background:var(--cloud);border-radius:999px;padding:4px 12px;font-weight:800;font-size:18px;color:var(--ink);width:min(200px,45vw)}
+.cover .meta{margin-left:auto;font-weight:800;font-size:16px;display:flex;gap:14px;flex-wrap:wrap}
+.author{flex-basis:100%;text-align:center;color:var(--muted);text-decoration:none;font-weight:700;font-size:12px;line-height:1;margin-top:-2px}
+.author:hover{color:var(--blue)}
+.credit{font-size:13px;color:var(--muted);font-weight:700}
+.credit a{color:var(--blue)}
+
+/* notebook page */
+.page{flex:1;display:flex;flex-direction:column;position:relative;background:var(--paper);border-radius:20px;box-shadow:var(--shadow);padding:10px 70px 12px 22px}
+.page::after{content:"";position:absolute;top:0;bottom:0;right:54px;width:2px;background:var(--margin)}
+.tape{position:absolute;top:-10px;width:96px;height:24px;border-radius:4px;opacity:.75;z-index:1}
+.tape.t1{left:36px;transform:rotate(-5deg);background:repeating-linear-gradient(45deg,#ffd66b 0 8px,#ffe59a 8px 16px)}
+.tape.t2{right:110px;transform:rotate(4deg);background:repeating-linear-gradient(45deg,#ff9fbf 0 8px,#ffc4d7 8px 16px)}
+.task{font-weight:800;font-size:20px;color:var(--text);margin:2px 0 4px;line-height:1.4;text-align:center;text-wrap:balance}
+.task b{color:var(--blue);font-weight:900}
+
+.rows{flex:1;display:flex;flex-direction:column;justify-content:space-evenly;position:relative}
+.row.probe{position:absolute;left:0;right:0;top:0;visibility:hidden;pointer-events:none}
+.row{display:flex;flex-wrap:wrap;column-gap:calc(var(--fs) * 1.1);row-gap:0;
+  background-image:repeating-linear-gradient(to bottom,
+      transparent 0, transparent calc(var(--top) - 1px),
+      var(--line-soft) calc(var(--top) - 1px), var(--line-soft) var(--top),
+      transparent var(--top), transparent calc(var(--base) - 2px),
+      var(--line) calc(var(--base) - 2px), var(--line) var(--base),
+      transparent var(--base), transparent calc(var(--L) + var(--U)))}
+.word{height:calc(var(--L) + var(--U));display:flex;flex-direction:column;position:relative}
+.letters{height:var(--L);display:flex;align-items:flex-end;padding-bottom:calc(var(--fs) * .16);user-select:none;-webkit-user-select:none;position:relative}
+.word.ok .letters::after,.word.no .letters::after{content:"";position:absolute;left:0;right:0;top:calc(var(--base) + var(--fs)*.25);height:4px;border-radius:4px}
+.word.ok .letters::after{background:var(--green)}
+.word.no .letters::after{background:var(--red)}
+.ch{font-family:var(--round);font-weight:800;font-size:var(--fs);line-height:1;color:var(--ink);position:relative;cursor:pointer;padding:0 1px;border-radius:8px}
+.ch.red{color:var(--red)}
+.ch.st::before{content:"";position:absolute;left:50%;top:-.14em;width:.09em;height:.42em;background:var(--stress);border-radius:99px;transform:translateX(-5%) rotate(32deg)}
+.ch.st.good::before{background:var(--green)}
+.ch.st.bad::before{background:var(--red)}
+.ch.hot{background:color-mix(in srgb,var(--sun) 50%,transparent)}
+/* the gap keeps the same width with or without a divider, so words never shift */
+/* a divider widens its own gap and the word's other gaps shrink by the same amount, so the word keeps its width */
+.gap.has{width:.4em}
+.gap{display:inline-block;width:.1em;font-size:var(--fs);height:1em;position:relative;cursor:pointer;flex:none;align-self:flex-end;margin-bottom:.02em}
+.gap.hot{background:color-mix(in srgb,var(--sun) 60%,transparent);border-radius:8px}
+.dv{position:absolute;top:0;bottom:0;left:50%;width:.5em;margin-left:-.25em;display:grid;place-items:center;color:var(--sep);touch-action:none;cursor:grab;z-index:1}
+.dv.dash::before{content:"";width:.3em;height:.1em;background:currentColor;border-radius:99px;transform:translateY(.1em)}
+.dv.bar::before{content:"";width:.1em;height:1.2em;background:currentColor;border-radius:99px;transform:translateY(-.02em)}
+.dv.good{color:var(--green)}
+.dv.bad{color:var(--red)}
+.under{height:var(--U);display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:13px}
+.badge{font-weight:900;font-size:12px;border-radius:999px;padding:1px 9px}
+.badge.ok{background:var(--mint);color:var(--green)}
+.badge.no{background:var(--rose);color:var(--red)}
+.badge.q{color:var(--muted);font-weight:700}
+.answer{font-weight:800;font-size:18px;color:var(--muted)}
+.grade{position:absolute;top:10px;right:5px;width:54px;height:54px;border:3px solid var(--red);border-radius:50%;color:var(--red);font-weight:900;font-size:30px;display:grid;place-items:center;transform:rotate(-12deg);background:var(--paper);z-index:2}
+@media (prefers-reduced-motion:no-preference){.grade.pop{animation:pop .45s cubic-bezier(.3,1.6,.5,1)}@keyframes pop{from{transform:rotate(-40deg) scale(.2);opacity:0}}
+  .owl.hop{animation:hop .6s ease}@keyframes hop{30%{transform:translateY(-10px) rotate(-6deg)}60%{transform:translateY(0) rotate(4deg)}}}
+
+/* bottom bar */
+.tools{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--paper);border-radius:24px 24px 0 0;
+  padding:8px max(12px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));
+  display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:center;box-shadow:0 -10px 30px -16px rgba(29,43,94,.5)}
+.group{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.helper{display:flex;align-items:center;gap:6px;max-width:360px}
+.owl{width:56px;height:56px;flex:none}
+.bubble{position:relative;background:var(--lemon);border-radius:16px;padding:6px 12px;font-weight:800;font-size:14px;line-height:1.25;color:var(--text)}
+.bubble::before{content:"";position:absolute;left:-7px;top:50%;margin-top:-7px;border:7px solid transparent;border-left:0;border-right-color:var(--lemon)}
+.bubble .stars{font-size:20px;letter-spacing:1px;color:#f0a800;display:block;line-height:1}
+.bubble .stars .off{color:#e6dcb8}
+.bubble small{display:block;font-weight:700;font-size:12px;color:var(--muted)}
+.token{width:58px;height:58px;border-radius:18px;background:var(--sun);display:grid;place-items:center;font-weight:900;font-size:36px;line-height:1;cursor:grab;touch-action:none;user-select:none;box-shadow:inset 0 -5px 0 rgba(0,0,0,.14),0 4px 10px -4px rgba(168,107,0,.6);border:0;transition:transform .15s}
+.token:hover{transform:translateY(-2px) rotate(-3deg)}
+.token:active{cursor:grabbing}
+#tokDiv,.ghost.div{color:var(--sep)}
+#tokStress,.ghost.stress{color:var(--stress);font-size:44px}
+.btn{border:0;background:var(--cloud);border-radius:999px;padding:11px 16px;font-weight:800;font-size:16px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;line-height:1.1;color:var(--text);box-shadow:inset 0 -3px 0 rgba(0,0,0,.08);transition:transform .12s}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(1px)}
+.btn[data-mode="syl"]{background:var(--mint)}
+.btn[data-mode="stress"]{background:var(--lilac)}
+.btn[data-mode="red"]{background:var(--rose)}
+.btn[data-mode="syl"][aria-pressed="true"]{background:var(--sep);color:#fff}
+.btn[data-mode="stress"][aria-pressed="true"]{background:var(--stress);color:#fff}
+.btn[data-mode="red"][aria-pressed="true"]{background:var(--red);color:#fff}
+.btn[data-mode="erase"][aria-pressed="true"]{background:#5b6680;color:#fff}
+.btn.main{background:var(--green);color:#fff;font-size:17px;padding:12px 20px}
+.btn#bAnswers[aria-pressed="true"]{background:var(--sun);color:var(--text)}
+.btn .dot{width:12px;height:12px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:0 0 0 2px #fff}
+
+/* settings: opens above the bottom bar */
+.settings{position:fixed;z-index:6;left:50%;transform:translateX(-50%);width:min(1100px,calc(100% - 24px));bottom:calc(var(--barH) + 10px);max-height:calc(100% - var(--barH) - 24px);overflow:auto;
+  background:var(--paper);border-radius:20px;padding:14px 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px 22px;box-shadow:0 20px 50px -20px rgba(29,43,94,.6)}
+.settings .btn{font-size:14px;padding:8px 13px}
+.settings .btn[aria-pressed="true"]{background:var(--blue);color:#fff}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field > span{font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.stepper{display:flex;align-items:center;gap:8px}
+.stepper output{min-width:2em;text-align:center;font-weight:900;font-size:22px;font-variant-numeric:tabular-nums}
+.check{display:flex;gap:8px;align-items:center;font-weight:800;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--blue)}
+.wide{grid-column:1/-1}
+.mywords textarea{width:100%;min-height:64px;resize:vertical;border:2px solid var(--line-soft);border-radius:14px;padding:8px 12px;background:var(--paper);font-weight:800;font-size:20px;line-height:1.3;color:var(--ink)}
+.note{font-size:13px;color:var(--muted);line-height:1.5;font-weight:600}
+.note b{color:var(--text)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.wchip{font-weight:800;font-size:18px;padding:1px 12px;border-radius:999px;background:var(--cloud);color:var(--ink)}
+.wchip.unk{background:var(--paper);border:2px dashed var(--muted)}
+.wchip.unk::after{content:" ?";color:var(--muted)}
+.row-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.legend{font-size:13px;color:var(--muted);font-weight:600}
+
+.ghost{position:fixed;left:0;top:0;pointer-events:none;z-index:50;width:52px;height:52px;border-radius:16px;background:var(--sun);display:grid;place-items:center;font-weight:900;font-size:34px;box-shadow:0 12px 26px -8px rgba(0,0,0,.45);opacity:.94}
+
+@media (max-width:640px){
+  :root{--U:26px}
+  .page{padding:8px 40px 10px 10px}
+  .page::after{right:30px}
+  .grade{width:38px;height:38px;font-size:22px;right:-2px;border-width:2px}
+  .cover .meta{display:none}
+  .helper .bubble{display:none}
+  .btn{padding:9px 12px;font-size:14px}
+  .task{font-size:16px}
+}
+</style>
+
+<div class="wrap">
+  <header class="cover">
+    <h1><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z" fill="#ffd34d" stroke="#e0a400" stroke-width="1.2" stroke-linejoin="round"/></svg><span id="title">Слоги и ударение</span></h1>
+    <label class="who" for="pupil">Меня зовут <input id="pupil" placeholder="имя" autocomplete="off"></label>
+    <div class="meta"><span id="dateLine"></span><span>Классная работа</span></div>
+  </header>
+
+  <main class="page" id="page">
+    <span class="tape t1" aria-hidden="true"></span><span class="tape t2" aria-hidden="true"></span>
+    <p class="task" id="taskLine"></p>
+    <div class="rows" id="rows"></div>
+    <div class="grade" id="grade" hidden></div>
+  </main>
+</div>
+
+<div class="tools" id="tools">
+  <div class="helper">
+    <svg class="owl" id="owl" viewBox="0 0 64 64" aria-hidden="true">
+      <path d="M13 22 L16 6 L27 16 Z M51 22 L48 6 L37 16 Z" fill="#9a6a45"/>
+      <ellipse cx="32" cy="38" rx="22" ry="23" fill="#b07d52"/>
+      <ellipse cx="32" cy="45" rx="13" ry="14" fill="#f6e1bd"/>
+      <path d="M24 44 q2 2 4 0 M30 49 q2 2 4 0 M36 44 q2 2 4 0" stroke="#d9b98a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <circle cx="23" cy="28" r="9.5" fill="#fff"/><circle cx="41" cy="28" r="9.5" fill="#fff"/>
+      <circle cx="24" cy="29" r="4.6" fill="#1d2b5e"/><circle cx="40" cy="29" r="4.6" fill="#1d2b5e"/>
+      <circle cx="25.6" cy="27.4" r="1.5" fill="#fff"/><circle cx="41.6" cy="27.4" r="1.5" fill="#fff"/>
+      <path d="M29 34.5 L35 34.5 L32 39.5 Z" fill="#ffb02e"/>
+      <path d="M14 56 q4 4 8 0 M42 56 q4 4 8 0" stroke="#ffb02e" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    </svg>
+    <div class="bubble" id="bubble"></div>
+  </div>
+  <div class="group">
+    <div class="token" id="tokDiv" role="button" tabindex="0" aria-label="Делитель: перетащи между буквами">–</div>
+    <div class="token" id="tokStress" role="button" tabindex="0" aria-label="Знак ударения: перетащи на гласную">´</div>
+  </div>
+  <div class="group" role="group" aria-label="Что делает нажатие на букву">
+    <button class="btn" data-mode="syl" aria-pressed="true" id="mSyl">Чёрточка</button>
+    <button class="btn" data-mode="stress" aria-pressed="false" id="mStress">Ударение</button>
+    <button class="btn" data-mode="red" aria-pressed="false" id="mRed"><i class="dot"></i>Гласные</button>
+    <button class="btn" data-mode="erase" aria-pressed="false" id="mErase">Ластик</button>
+  </div>
+  <div class="group">
+    <button class="btn main" id="bCheck">✓ Проверить</button>
+    <button class="btn" id="bAnswers" aria-pressed="false">Ответы</button>
+    <button class="btn" id="bClear">Стереть</button>
+    <button class="btn" id="bNew">Новые слова</button>
+    <button class="btn" id="bSettings" aria-expanded="false" aria-controls="settings">Настройки</button>
+  </div>
+  <a class="author" href="https://www.instagram.com/dlya.urokov23/" target="_blank" rel="noopener">Разработчик: Курбаниязова Ильмира Климентовна · Instagram @dlya.urokov23</a>
+</div>
+
+<section class="settings" id="settings" hidden>
+  <div class="field wide"><span>Задание</span>
+    <div class="seg" id="task">
+      <button class="btn" data-v="syl" id="taskSyl">Деление на слоги</button>
+      <button class="btn" data-v="hyph" id="taskHyph">Деление для переноса</button>
+    </div>
+    <span class="note" id="rulesNote"></span>
+  </div>
+  <div class="field"><span>Уровень</span>
+    <div class="seg" id="level">
+      <button class="btn" data-v="mid" id="lvMid">Средний</button>
+      <button class="btn" data-v="hard" id="lvHard">Трудный</button>
+      <button class="btn" data-v="mix" id="lvMix">Вперемешку</button>
+    </div>
+  </div>
+  <div class="field"><span>Слов в строке</span>
+    <div class="seg" id="per">
+      <button class="btn" data-v="3" id="per3">3 слова</button>
+      <button class="btn" data-v="4" id="per4">4 слова</button>    </div>
+  </div>
+  <div class="field"><span>Строк</span>
+    <div class="stepper">
+      <button class="btn" id="rowsMinus" aria-label="Меньше строк">−</button>
+      <output id="rowsOut">4</output>
+      <button class="btn" id="rowsPlus" aria-label="Больше строк">+</button>
+      <span class="legend" id="totalOut"></span>
+    </div>
+  </div>
+  <div class="field"><span>Делитель</span>
+    <div class="seg" id="sep">
+      <button class="btn" data-v="dash" id="sepDash">ма – ма &nbsp;тире</button>
+      <button class="btn" data-v="bar" id="sepBar">ма | ма &nbsp;палочка</button>
+    </div>
+  </div>
+  <div class="field"><span>Проверка</span>
+    <label class="check" for="chkStress"><input type="checkbox" id="chkStress" checked> Проверять ударение</label>
+    <span class="legend">Красные гласные не проверяются: их можно выделять или не выделять.</span>
+  </div>
+  <div class="field wide mywords"><span>Мои слова</span>
+    <textarea id="custom" placeholder="Например: моро'з, кАрта, тетра'дь, подснежник"></textarea>
+    <div class="chips" id="customChips"></div>
+    <div class="note">Пишите слова через запятую. Ударение можно отметить так: <b>моро'з</b> или <b>морОз</b>. Если ударение не отмечено, тренажёр ищет слово в своём словаре; в словах со знаком <b>?</b> ударение не проверяется.</div>
+    <div class="row-actions">
+      <button class="btn main" id="bApply">Записать в тетрадь</button>
+      <label class="check" for="chkOnly"><input type="checkbox" id="chkOnly"> Только мои слова</label>
+      <span class="legend">Иначе свободные места дополнятся словами из словаря.</span>
+    </div>
+  </div>
+  <p class="credit wide">Разработчик: Курбаниязова Ильмира Климентовна · Instagram <a href="https://www.instagram.com/dlya.urokov23/" target="_blank" rel="noopener">@dlya.urokov23</a></p>
+</section>
+
+<script>
+(function(){
+"use strict";
+const VOW="аеёиоуыэюя";
+const isV=c=>VOW.includes(c);
+const OBS="бвгджзкпстфхцчшщ", LIQ="рл", SON="лмнрй";
+
+const MID=`ко'шка,ло'жка,ру'чка,ка'рта,ла'мпа,ку'кла,бу'лка,су'мка,за'йка,ча'йка,ле'йка,ма'йка,коньки',пальто',письмо',де'ньги,ма'льчик,о'сень,ме'сяц,моро'з,пету'х,медве'дь,ска'зка,кни'жка,звезда',гнездо',ка'сса,ва'нна,апре'ль,пена'л,тетра'дь,руче'й,воробе'й,молоко',соро'ка,воро'на,доро'га,пого'да,капу'ста,мали'на,ряби'на,карти'на,ли'стья,у'лица,о'блако,я'блоко,ко'мната,берёза,ёлка,ёжик,ты'ква,ве'тка,ре'чка,мы'шка,снеги'рь,ба'бушка,де'душка,тюльпа'н,ши'шка,ко'фта,ша'пка,игру'шка,листо'к,ко'злик,ба'нка,ве'ник,ва'за,го'род,гу'си,до'мик,ды'ня,зима',ка'ша,коза',ку'рица,ла'па,лиса',ло'дка,ма'ма,мы'ло,о'вощи,о'зеро,пе'сня,пти'ца,ры'ба,рука',са'нки,соба'ка,сова',ту'ча,у'тка,у'тро,ча'шка,ша'рик,шко'ла,щу'ка,я'года,ве'тер,вода',до'ждик,жира'ф,за'втрак,за'яц,зе'бра,игла',и'ней,ка'мень,ко'лос,коро'ва,ле'бедь,ло'шадь,лягу'шка,ма'рка,ми'шка,мо'ре,му'ха,мя'чик,не'бо,окно',оре'х,па'лка,па'па,па'рта,песо'к,пиро'г,пла'тье,по'ле,по'лка,пчела',ра'ма,ре'пка,роса',руба'шка,са'хар,семья',та'нец,ту'фли,у'гол,у'жин,у'хо,флажо'к,цветы',ча'йник,щено'к,ю'бка,я'щик,ле'то,весна',ке'пка,бе'лка,бу'сы,ва'фли,гру'ша,сли'ва,ви'шня,ре'дька,пе'чка,сви'сток,ве'рба,буква'рь,ла'вка,скаме'йка,кома'р,ба'бочка,гроза',ры'бка`;
+const HARD=`каранда'ш,учи'тель,учени'к,кузне'чик,клубни'ка,ла'сточка,суббо'та,гру'ппа,портфе'ль,лине'йка,сне'жинка,ра'дуга,скворе'ц,февра'ль,дежу'рный,я'блоня,цыплёнок,со'лнышко,воробьи',соловьи',мураве'й,телефо'н,тра'ктор,апте'ка,авто'бус,электри'чка,велосипе'д,космона'вт,библиоте'ка,огуре'ц,помидо'р,морко'вь,карто'фель,стака'н,сви'тер,ма'ленький,большо'й,интере'сный,ка'рточка,ко'локол,хоккеи'ст,пассажи'р,ва'режки,самолёт,вертолёт,ла'ндыш,подсне'жник,земляни'ка,черни'ка,весёлый,ко'мпас,ла'стик,ку'хня,ра'дость,о'бувь,оде'жда,ве'чер,стрекоза',моро'женое,но'жницы,ве'шалка,черепа'ха,попуга'й,крокоди'л,медвежо'нок,зайчо'нок,бегемо'т,карти'нка,пуши'стый,солове'й,кастрю'ля,ска'терть,таре'лка,холоди'льник,телеви'зор,компью'тер,учи'тельница,переме'на,дневни'к,физкульту'ра,матема'тика,алфави'т,воскресе'нье,понеде'льник,пя'тница,сентя'брь,октя'брь,ноя'брь,дека'брь,янва'рь,а'вгуст,смороди'на,мандари'н,апельси'н,виногра'д,краси'вый,смешно'й,сосу'лька,снегови'к,мете'ль,вью'га,жа'воронок,дя'тел,сини'ца,ца'пля,аи'ст,пингви'н,мураве'йник,светлячо'к,одува'нчик,колоко'льчик,рома'шка,василёк,сире'нь,берёзка,оси'на,ёлочка,тропи'нка,доро'жка,ручеёк,рюкза'к,флома'стер,кра'ски,кисто'чка,альбо'м,пласти'лин,констру'ктор,матрёшка,пирами'дка,самока'т,тролле'йбус,трамва'й,ваго'н,раке'та,ко'смос,плане'та,звёздочка,о'блачко,мо'лния,сугро'б,те'ннис,програ'мма,алле'я,касси'р,дождь,мяч,лист,слон,гриб,день,конь,лёд,мост,кит,волк,хлеб,стол,шарф,дуб,класс,тигр`;
+
+function parseRaw(raw){
+  const letters=[],upper=[];let s=null;
+  for(const ch of raw){
+    if("'`ʼ’´́".includes(ch)){ if(letters.length&&isV(letters[letters.length-1])) s=letters.length-1; continue; }
+    const lo=ch.toLowerCase();
+    if(/[а-яё]/.test(lo)){ if(ch!==lo) upper.push(letters.length); letters.push(lo); }
+  }
+  if(s===null){
+    const ups=upper.filter(i=>i>0);
+    if(ups.length===1&&isV(letters[ups[0]])&&upper.length<letters.length) s=ups[0];
+  }
+  return {t:letters.join(""),s};
+}
+const DICT={};
+const MIDW=MID.split(",").map(parseRaw), HARDW=HARD.split(",").map(parseRaw);
+[...MIDW,...HARDW].forEach(w=>{DICT[w.t]=w.s;});
+function finish(w){
+  if(w.s===null&&w.t in DICT) w.s=DICT[w.t];
+  if(w.s===null&&w.t.includes("ё")) w.s=w.t.indexOf("ё");
+  return w;
+}
+[...MIDW,...HARDW].forEach(finish);
+
+/* ---------- state ---------- */
+const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v);}catch(e){return d;}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const S=Object.assign({task:"syl",level:"mid",per:3,rows:4,sep:"dash",checkStress:true,custom:"",onlyMine:false},store.get("slogi.settings",{}));
+if(S.per>4) S.per=4;
+if(S.custom==="моро'з, тетра'дь, кузне'чик, па'льма") S.custom="";  // old built-in sample, not the teacher's words
+let words=[],mode="syl",showAnswers=false;
+const $=id=>document.getElementById(id);
+const save=()=>store.set("slogi.settings",S);
+
+/* ---------- syllable and hyphenation rules ---------- */
+const vowelsOf=t=>[...t].map((c,i)=>isV(c)?i:-1).filter(i=>i>=0);
+// gap g = boundary before letter g. Syllables: any correct variant between two vowels.
+function allowedSyl(t,i,j){
+  const A=new Set(),cl=[];
+  for(let p=i+1;p<j;p++) cl.push(p);
+  if(!cl.length){A.add(j);return A;}
+  let forced=null;
+  for(const p of cl) if("ьъй".includes(t[p])&&p+1<j) forced=p+1;
+  if(forced!==null){A.add(forced);return A;}
+  const real=cl.filter(p=>!"ьъ".includes(t[p]));
+  if(real.length===1&&t[real[0]]==="й"){A.add(i+1);A.add(j);return A;}
+  if(real.length<=1){A.add(i+1);return A;}
+  for(const p of cl) if(!"ьъй".includes(t[p])) A.add(p);
+  return A;
+}
+// Hyphenation: same places, but double consonants are split between them,
+// and one letter is never left on the line or carried over.
+function allowed(t,i,j){
+  let A=allowedSyl(t,i,j);
+  if(S.task!=="hyph") return A;
+  for(let p=i+1;p<j-1;p++) if(t[p]===t[p+1]&&!isV(t[p])&&A.has(p+1)){A=new Set([p+1]);break;}
+  const n=t.length;
+  return new Set([...A].filter(g=>g>1&&g<n-1));
+}
+function canonGap(t,i,j){
+  const A=allowed(t,i,j);
+  if(A.size===0) return null;
+  if(A.size===1) return [...A][0];
+  const cons=[];for(let p=i+1;p<j;p++) if(!"ьъ".includes(t[p])) cons.push(p);
+  let g;const n=cons.length;
+  if(n<=1) g=i+1;
+  else if(n===2) g=(OBS.includes(t[cons[0]])&&LIQ.includes(t[cons[1]]))?i+1:cons[1];
+  else if(OBS.includes(t[cons[n-2]])&&LIQ.includes(t[cons[n-1]])) g=cons[n-2];
+  else if(SON.includes(t[cons[0]])) g=cons[2];
+  else g=cons[1];
+  if(A.has(g)) return g;
+  return [...A].sort((a,b)=>Math.abs(a-g)-Math.abs(b-g))[0];
+}
+function checkDivision(t,div){
+  const V=vowelsOf(t),bad=new Set(),good=new Set();
+  if(V.length<=1){div.forEach(g=>bad.add(g));return {ok:bad.size===0,bad,good};}
+  const per=V.slice(0,-1).map(()=>[]);
+  div.forEach(g=>{
+    let k=-1;for(let q=0;q<V.length-1;q++) if(g>V[q]&&g<=V[q+1]) k=q;
+    if(k<0) bad.add(g); else per[k].push(g);
+  });
+  let ok=bad.size===0;
+  per.forEach((gs,k)=>{
+    const A=allowed(t,V[k],V[k+1]);
+    if(A.size===0){ gs.forEach(g=>bad.add(g)); if(gs.length) ok=false; return; }
+    if(gs.length!==1) ok=false;
+    if(gs.length>1) gs.forEach(g=>bad.add(g));
+    else gs.forEach(g=>{ if(A.has(g)) good.add(g); else {bad.add(g);ok=false;} });
+  });
+  return {ok,bad,good};
+}
+function answerText(w){
+  const V=vowelsOf(w.t),gaps=new Set();
+  for(let k=0;k<V.length-1;k++){const g=canonGap(w.t,V[k],V[k+1]); if(g!==null) gaps.add(g);}
+  const sep=S.sep==="bar"?" | ":"-";
+  let out="";
+  [...w.t].forEach((c,i)=>{ if(gaps.has(i)) out+=sep; out+=c; if(i===w.s&&V.length>1&&c!=="ё") out+="́"; });
+  if(S.task==="hyph"&&!gaps.size) out+="  (не переносится)";
+  return out;
+}
+
+function parseCustom(text){
+  return text.split(/[,;\n]+/).map(s=>s.trim()).filter(Boolean).map(parseRaw).filter(w=>w.t.length>0).map(finish);
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+// Every row gets a letter budget, so each new set is about as wide as the last
+// and the letter size stays the same from set to set.
+const LEN={mid:6,hard:8,mix:7};
+function generate(){
+  const mine=shuffle(parseCustom(S.custom));
+  let list;
+  if(S.onlyMine&&mine.length){ list=mine; }
+  else{
+    const seen=new Set(mine.map(w=>w.t));
+    const pool=shuffle((S.level==="mid"?MIDW:S.level==="hard"?HARDW:[...MIDW,...HARDW]).filter(w=>!seen.has(w.t)).map(w=>({...w})));
+    const B=S.per*LEN[S.level], nRows=Math.max(S.rows,Math.ceil(mine.length/S.per));
+    const queue=mine.slice(); list=[];
+    for(let r=0;r<nRows;r++){
+      let used=0;
+      for(let k=0;k<S.per;k++){
+        let w;
+        if(queue.length) w=queue.shift();
+        else{
+          const room=B-used-(S.per-k-1)*4;
+          let idx=pool.findIndex(x=>x.t.length<=room);
+          if(idx<0){ idx=0; pool.forEach((x,i)=>{ if(x.t.length<pool[idx].t.length) idx=i; }); }
+          if(!pool.length) break;
+          w=pool.splice(idx,1)[0];
+        }
+        used+=w.t.length; list.push(w);
+      }
+    }
+    // own words land in new places each time, but keep whole rows together
+    const rows=[];for(let i=0;i<list.length;i+=S.per) rows.push(list.slice(i,i+S.per));
+    list=shuffle(rows).flatMap(r=>shuffle(r));
+  }
+  words=list.map(w=>({t:w.t,s:w.s,div:new Set(),us:null,red:new Set(),res:null}));
+  showAnswers=false;$("bAnswers").setAttribute("aria-pressed","false");
+  hideResult();render();
+}
+
+/* ---------- render ---------- */
+const rowsEl=$("rows");
+const GAP=.1, GAP_DIV=.4;  // space between letters, and at a syllable break (in letter heights)
+function wordEl(w,wi){
+  const el=document.createElement("div");
+  el.className="word"+(w.res?(w.res.ok?" ok":" no"):"");
+  el.dataset.w=wi;
+  const L=document.createElement("div");L.className="letters";
+  [...w.t].forEach((c,i)=>{
+    if(i>0){
+      const g=document.createElement("span");g.className="gap";g.dataset.g=i;
+      if(w.div.has(i)){
+        g.classList.add("has");
+        const d=document.createElement("span");
+        d.className="dv "+(S.sep==="bar"?"bar":"dash");
+        if(w.res){ if(w.res.bad.has(i)) d.classList.add("bad"); else if(w.res.good.has(i)) d.classList.add("good"); }
+        g.appendChild(d);
+      }
+      L.appendChild(g);
+    }
+    const s=document.createElement("span");
+    s.className="ch"+(isV(c)?" v":"")+(w.red.has(i)?" red":"")+(w.us===i?" st":"");
+    if(w.us===i&&w.res&&w.res.stChecked) s.classList.add(w.res.st?"good":"bad");
+    s.dataset.i=i;s.textContent=c;
+    L.appendChild(s);
+  });
+  el.appendChild(L);
+  // each word keeps room on its right for the dividers it will need; a divider uses up that room,
+  // so the word's box never gets wider and the row never spills over
+  const need=Math.max(0,vowelsOf(w.t).length-1), k=w.div.size;
+  el.style.paddingRight=`calc(var(--fs) * ${(Math.max(0,need-k)*(GAP_DIV-GAP)).toFixed(3)})`;
+  const U=document.createElement("div");U.className="under";
+  if(w.res){
+    const b=document.createElement("span");
+    if(w.res.ok){b.className="badge ok";b.textContent="✓ верно";}
+    else{b.className="badge no";const m=[];if(!w.res.div)m.push(S.task==="hyph"?"перенос":"слоги");if(w.res.stChecked&&!w.res.st)m.push("ударение");b.textContent="✗ "+m.join(", ");}
+    U.appendChild(b);
+    if(w.res.unknown){const q=document.createElement("span");q.className="badge q";q.textContent="ударение не проверено";U.appendChild(q);}
+  }
+  if(showAnswers){const a=document.createElement("span");a.className="answer";a.textContent=answerText(w);U.appendChild(a);}
+  el.appendChild(U);
+  return el;
+}
+function render(){
+  rowsEl.innerHTML="";
+  for(let r=0;r<words.length;r+=S.per){
+    const row=document.createElement("div");row.className="row";
+    for(let k=r;k<Math.min(r+S.per,words.length);k++) row.appendChild(wordEl(words[k],k));
+    rowsEl.appendChild(row);
+  }
+  $("tokDiv").textContent=S.sep==="bar"?"|":"–";
+  syncSettingsUI();
+  fit();
+}
+function rerender(wi){
+  const old=rowsEl.querySelector(`.word[data-w="${wi}"]`);
+  if(old) old.replaceWith(wordEl(words[wi],wi));
+  if(rowsWrap()) fit();
+}
+function touched(wi){ words[wi].res=null; rerender(wi); }
+
+/* ---------- fit the page to the screen ---------- */
+const root=document.documentElement;
+function measureBaseline(){
+  const ch=rowsEl.querySelector(".ch"); if(!ch) return;
+  const fs=parseFloat(getComputedStyle(ch).fontSize);
+  const p=document.createElement("span");p.style.cssText="display:inline-block;width:0;height:0;vertical-align:baseline";
+  ch.appendChild(p);
+  const below=(ch.getBoundingClientRect().bottom-p.getBoundingClientRect().top)/fs;
+  p.remove();
+  root.style.setProperty("--desc",(below+.16).toFixed(3));
+}
+function fit(){
+  const barH=$("tools").offsetHeight;
+  root.style.setProperty("--barH",barH+"px");
+  const narrow=innerWidth<700;
+  // room left for the rows once the cover, the task line and the bottom bar are placed
+  const other=document.querySelector(".cover").offsetHeight+8+$("taskLine").offsetHeight+44;
+  const avail=innerHeight-barH-20-other;
+  // a hidden sample row of average-width words sets one size for this level and screen
+  const probe=document.createElement("div");probe.className="row probe";
+  const n=LEN[S.level];
+  for(let k=0;k<S.per;k++) probe.appendChild(wordEl({t:"на".repeat(n).slice(0,n),s:null,div:new Set(),us:null,red:new Set(),res:null},-1));
+  rowsEl.appendChild(probe);
+  const ok=fs=>{
+    root.style.setProperty("--fs",fs+"px");
+    const rows=[...rowsEl.children].filter(r=>r!==probe);
+    const word=rowsEl.querySelector(".word");
+    const wh=word?word.offsetHeight:0;
+    const oneLine=narrow||(rows.every(r=>r.offsetHeight<=wh+2)&&probe.offsetHeight<=wh+2);
+    const sum=rows.reduce((a,r)=>a+r.offsetHeight,0);
+    return oneLine&&sum<=avail;
+  };
+  // biggest letter size that still fits the whole sheet on screen
+  let lo=narrow?28:22,hi=220;
+  while(hi-lo>1){ const mid=(lo+hi)>>1; if(ok(mid)) lo=mid; else hi=mid; }
+  probe.remove();
+  root.style.setProperty("--fs",Math.floor(lo*.96)+"px");  // small reserve so a row never spills over
+  measureBaseline();
+}
+function rowsWrap(){
+  const word=rowsEl.querySelector(".word"); if(!word||innerWidth<700) return false;
+  const wh=word.offsetHeight;
+  return [...rowsEl.children].some(r=>r.offsetHeight>wh+2);
+}
+// refit once the real font has arrived (a fallback font is narrower and would make letters too big)
+if(document.fonts){
+  document.fonts.load('800 40px "Nunito"').then(fit).catch(()=>{});
+  document.fonts.addEventListener&&document.fonts.addEventListener("loadingdone",fit);
+}
+let rt=null;
+addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(fit,120);});
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fit);
+
+/* ---------- actions on letters ---------- */
+function toggleDiv(wi,g,force){
+  const w=words[wi]; if(g<1||g>=w.t.length) return;
+  const on=force===undefined?!w.div.has(g):force;
+  on?w.div.add(g):w.div.delete(g); touched(wi);
+}
+function setStress(wi,i,toggle){
+  const w=words[wi]; if(!isV(w.t[i])) return;
+  w.us=(toggle&&w.us===i)?null:i; touched(wi);
+}
+let suppressClick=false;
+rowsEl.addEventListener("click",e=>{
+  if(suppressClick) return;
+  const wEl=e.target.closest(".word"); if(!wEl) return;
+  const wi=+wEl.dataset.w, w=words[wi];
+  const gap=e.target.closest(".gap"), ch=e.target.closest(".ch");
+  if(gap){ const g=+gap.dataset.g; if(mode==="syl") toggleDiv(wi,g); else if(mode==="erase") toggleDiv(wi,g,false); return; }
+  if(!ch) return;
+  const i=+ch.dataset.i;
+  if(mode==="syl"){
+    const r=ch.getBoundingClientRect();
+    toggleDiv(wi,(e.clientX<r.left+r.width/2)?i:i+1);
+  }else if(mode==="stress"){ setStress(wi,i,true); }
+  else if(mode==="red"){ if(isV(w.t[i])||w.red.has(i)){ w.red.has(i)?w.red.delete(i):w.red.add(i); touched(wi);} }
+  else if(mode==="erase"){ w.red.delete(i); if(w.us===i) w.us=null; w.div.delete(i); w.div.delete(i+1); touched(wi); }
+});
+
+/* ---------- drag and drop ---------- */
+let drag=null;
+function startDrag(e,kind,from){
+  drag={kind,from,x0:e.clientX,y0:e.clientY,moved:false,ghost:null,target:null};
+  e.preventDefault();
+}
+function nearest(x,y){
+  const sel=drag.kind==="div"?".gap":".ch.v";
+  let best=null,bs=1e9;
+  rowsEl.querySelectorAll(sel).forEach(el=>{
+    const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+    const dx=Math.abs(x-cx),dy=Math.abs(y-cy);
+    if(dy>r.height*1.1||dx>36) return;
+    const sc=dx+dy*.6; if(sc<bs){bs=sc;best=el;}
+  });
+  return best;
+}
+function setHot(el){
+  if(drag.target&&drag.target!==el) drag.target.classList.remove("hot");
+  drag.target=el; if(el) el.classList.add("hot");
+}
+document.addEventListener("pointermove",e=>{
+  if(!drag) return;
+  if(!drag.moved){
+    if(Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)<6) return;
+    drag.moved=true;
+    const g=document.createElement("div");g.className="ghost "+drag.kind;
+    g.textContent=drag.kind==="stress"?"´":(S.sep==="bar"?"|":"–");
+    document.body.appendChild(g);drag.ghost=g;
+    if(drag.from){ const f=drag.from; words[f.w].div.delete(f.g); touched(f.w); }
+  }
+  drag.ghost.style.transform=`translate(${e.clientX-26}px,${e.clientY-62}px)`;
+  setHot(nearest(e.clientX,e.clientY-20));
+});
+function endDrag(e,cancel){
+  if(!drag) return;
+  const d=drag; drag=null;
+  if(d.ghost) d.ghost.remove();
+  if(d.target) d.target.classList.remove("hot");
+  if(!d.moved){
+    if(d.from&&!cancel){ toggleDiv(d.from.w,d.from.g,false); }
+    else if(!d.from&&!cancel){ setMode(d.kind==="stress"?"stress":"syl"); }
+  }else if(d.target&&!cancel){
+    const wi=+d.target.closest(".word").dataset.w;
+    if(d.kind==="div") toggleDiv(wi,+d.target.dataset.g,true);
+    else setStress(wi,+d.target.dataset.i,false);
+  }
+  suppressClick=true; setTimeout(()=>{suppressClick=false;},0);
+}
+document.addEventListener("pointerup",e=>endDrag(e,false));
+document.addEventListener("pointercancel",e=>endDrag(e,true));
+rowsEl.addEventListener("pointerdown",e=>{
+  const dv=e.target.closest(".dv"); if(!dv||mode==="erase") return;
+  startDrag(e,"div",{w:+dv.closest(".word").dataset.w,g:+dv.closest(".gap").dataset.g});
+});
+$("tokDiv").addEventListener("pointerdown",e=>startDrag(e,"div",null));
+$("tokStress").addEventListener("pointerdown",e=>startDrag(e,"stress",null));
+["tokDiv","tokStress"].forEach(id=>$(id).addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();setMode(id==="tokDiv"?"syl":"stress");} }));
+
+/* ---------- modes ---------- */
+function setMode(m){
+  mode=m;
+  document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===m)));
+}
+document.querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
+
+/* ---------- owl helper ---------- */
+function tip(){
+  return S.task==="hyph"
+    ? "Покажи чёрточкой, где слово можно перенести. Одну букву не оставляй и не переноси!"
+    : "Тащи зелёную чёрточку между слогами, а фиолетовую — на ударную гласную!";
+}
+function owlSay(html){ $("bubble").innerHTML=html; const o=$("owl"); o.classList.remove("hop"); void o.getBoundingClientRect(); o.classList.add("hop"); }
+
+/* ---------- checking ---------- */
+const plural=(n,a,b,c)=>{const m=n%10,h=n%100;return (m===1&&h!==11)?a:(m>=2&&m<=4&&(h<12||h>14))?b:c;};
+function check(){
+  if(!words.length) return;
+  let right=0;
+  words.forEach(w=>{
+    const d=checkDivision(w.t,w.div);
+    const V=vowelsOf(w.t);
+    let st=true,stChecked=false,unknown=false;
+    if(S.checkStress){
+      if(V.length<=1){ st=(w.us===null||w.us===V[0]); stChecked=w.us!==null; }
+      else if(w.s===null){ unknown=true; }
+      else { st=w.us===w.s; stChecked=true; }
+    }
+    const ok=d.ok&&st;
+    w.res={ok,div:d.ok,bad:d.bad,good:d.good,st,stChecked,unknown};
+    if(ok) right++;
+  });
+  render();
+  const n=words.length,p=right/n;
+  const stars=p===1?3:p>=.8?2:p>=.5?1:0;
+  const st=[0,1,2].map(i=>i<stars?"★":'<span class="off">★</span>').join("");
+  const msg=p===1?"Ура! Всё верно!":p>=.8?"Молодец! Почти всё верно.":p>=.5?"Хорошо! Исправь ошибки.":"Давай попробуем ещё раз!";
+  owlSay(`<span class="stars">${st}</span>${msg}<small>Верно ${right} из ${n}</small>`);
+  const gr=$("grade"); gr.textContent=p>=.9?"5":p>=.75?"4":p>=.5?"3":"✎";
+  gr.hidden=false; gr.classList.remove("pop"); void gr.offsetWidth; gr.classList.add("pop");
+}
+function hideResult(){ $("grade").hidden=true; $("bubble").textContent=tip(); }
+$("bCheck").addEventListener("click",check);
+$("bAnswers").addEventListener("click",()=>{showAnswers=!showAnswers;$("bAnswers").setAttribute("aria-pressed",String(showAnswers));render();});
+$("bClear").addEventListener("click",()=>{words.forEach(w=>{w.div.clear();w.red.clear();w.us=null;w.res=null;});hideResult();render();});
+$("bNew").addEventListener("click",generate);
+
+/* ---------- settings ---------- */
+$("bSettings").addEventListener("click",()=>{const s=$("settings");s.hidden=!s.hidden;$("bSettings").setAttribute("aria-expanded",String(!s.hidden));});
+function syncSettingsUI(){
+  document.querySelectorAll("#task [data-v]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===S.task)));
+  document.querySelectorAll("#level [data-v]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===S.level)));
+  document.querySelectorAll("#per [data-v]").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.v===S.per)));
+  document.querySelectorAll("#sep [data-v]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===S.sep)));
+  $("rowsOut").textContent=S.rows;
+  const t=S.rows*S.per;$("totalOut").textContent=`= ${t} ${plural(t,"слово","слова","слов")}`;
+  $("chkStress").checked=S.checkStress;$("chkOnly").checked=S.onlyMine;
+  const hy=S.task==="hyph";
+  $("title").textContent=hy?"Перенос слов":"Слоги и ударение";
+  $("taskLine").innerHTML=`<b>${hy?"Раздели слова для переноса":"Раздели слова на слоги"}</b>${S.checkStress?", поставь ударение":""}. Гласные можно выделить красным.`;
+  $("rulesNote").innerHTML=hy
+    ? "<b>Перенос:</b> переносят по слогам. Одну букву нельзя оставлять на строке и нельзя переносить (осень, ёжик не переносят; ули-ца, яб-ло-ко). Ь и Й не отрывают (конь-ки, чай-ка). Двойные согласные разделяют (кас-са, ван-на). Если согласных несколько, засчитывается любой вариант (сест-ра, сес-тра)."
+    : "<b>Слоги:</b> в каждом слоге одна гласная. Одну согласную между гласными отдают следующему слогу (ма-ма). Ь и Й остаются в слоге слева (конь-ки, чай-ка). Если согласных несколько, засчитывается любой правильный вариант (кош-ка и ко-шка). Слово из одного слога не делят.";
+}
+document.querySelectorAll("#task [data-v]").forEach(b=>b.addEventListener("click",()=>{S.task=b.dataset.v;save();words.forEach(w=>w.res=null);hideResult();render();}));
+document.querySelectorAll("#level [data-v]").forEach(b=>b.addEventListener("click",()=>{S.level=b.dataset.v;save();generate();}));
+document.querySelectorAll("#per [data-v]").forEach(b=>b.addEventListener("click",()=>{S.per=+b.dataset.v;save();generate();}));
+document.querySelectorAll("#sep [data-v]").forEach(b=>b.addEventListener("click",()=>{S.sep=b.dataset.v;save();render();}));
+$("rowsMinus").addEventListener("click",()=>{if(S.rows>1){S.rows--;save();generate();}});
+$("rowsPlus").addEventListener("click",()=>{if(S.rows<12){S.rows++;save();generate();}});
+$("chkStress").addEventListener("change",e=>{S.checkStress=e.target.checked;save();words.forEach(w=>w.res=null);hideResult();render();});
+$("chkOnly").addEventListener("change",e=>{S.onlyMine=e.target.checked;save();});
+function drawChips(){
+  const box=$("customChips");box.innerHTML="";
+  parseCustom($("custom").value).forEach(w=>{
+    const c=document.createElement("span");c.className="wchip"+(w.s===null&&vowelsOf(w.t).length>1?" unk":"");
+    let out="";[...w.t].forEach((ch,i)=>{out+=ch;if(i===w.s&&vowelsOf(w.t).length>1&&ch!=="ё")out+="́";});
+    c.textContent=out;box.appendChild(c);
+  });
+}
+$("custom").value=S.custom;
+$("custom").addEventListener("input",()=>{S.custom=$("custom").value;save();drawChips();});
+$("bApply").addEventListener("click",()=>{
+  S.custom=$("custom").value;
+  const n=parseCustom(S.custom).length;
+  if(n>S.rows*S.per) S.rows=Math.min(30,Math.ceil(n/S.per));
+  save();generate();
+  $("settings").hidden=true;$("bSettings").setAttribute("aria-expanded","false");
+});
+
+/* ---------- date in words & pupil name ---------- */
+const ORD=["","первое","второе","третье","четвёртое","пятое","шестое","седьмое","восьмое","девятое","десятое","одиннадцатое","двенадцатое","тринадцатое","четырнадцатое","пятнадцатое","шестнадцатое","семнадцатое","восемнадцатое","девятнадцатое","двадцатое"];
+function dayWord(d){ if(d<=20) return ORD[d]; if(d<30) return "двадцать "+ORD[d-20]; return d===30?"тридцатое":"тридцать первое"; }
+const MON=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+const now=new Date(); const dw=dayWord(now.getDate());
+$("dateLine").textContent=dw.charAt(0).toUpperCase()+dw.slice(1)+" "+MON[now.getMonth()];
+$("pupil").value=store.get("slogi.pupil","");
+$("pupil").addEventListener("input",e=>store.set("slogi.pupil",e.target.value));
+
+drawChips();
+generate();
+})();
+</script>
