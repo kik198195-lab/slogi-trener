@@ -34,7 +34,7 @@
   --round:"Nunito","Varela Round","Segoe UI",system-ui,sans-serif;
   --fs:44px;                       /* letter size; script fits it to the screen */
   --L:calc(var(--fs) * 1.5);       /* letter line */
-  --U:26px;                        /* small line under the word for marks */
+  --U:20px;                        /* small line under the word for marks */
   --desc:.36;                      /* measured by script */
   --base:calc(var(--L) - var(--fs) * var(--desc));
   --top:calc(var(--base) - var(--fs) * .9);
@@ -62,13 +62,13 @@ button,input,textarea{font:inherit;color:inherit}
 .who{display:flex;align-items:center;gap:8px;background:#fff;color:var(--muted);border-radius:999px;padding:4px 6px 4px 14px;font-weight:700;font-size:14px}
 .who input{border:0;background:var(--cloud);border-radius:999px;padding:4px 12px;font-weight:800;font-size:18px;color:var(--ink);width:min(200px,45vw)}
 .cover .meta{margin-left:auto;font-weight:800;font-size:16px;display:flex;gap:14px;flex-wrap:wrap}
-.author{flex-basis:100%;text-align:center;color:var(--muted);text-decoration:none;font-weight:700;font-size:12px;line-height:1;margin-top:-2px}
+.author{position:absolute;left:0;right:60px;bottom:3px;text-align:center;color:var(--muted);text-decoration:none;font-weight:700;font-size:11px;line-height:1;opacity:.85}
 .author:hover{color:var(--blue)}
 .credit{font-size:13px;color:var(--muted);font-weight:700}
 .credit a{color:var(--blue)}
 
 /* notebook page */
-.page{flex:1;display:flex;flex-direction:column;position:relative;background:var(--paper);border-radius:20px;box-shadow:var(--shadow);padding:10px 70px 12px 22px}
+.page{flex:1;display:flex;flex-direction:column;position:relative;background:var(--paper);border-radius:20px;box-shadow:var(--shadow);padding:6px 70px 16px 22px}
 .page::after{content:"";position:absolute;top:0;bottom:0;right:54px;width:2px;background:var(--margin)}
 .tape{position:absolute;top:-10px;width:96px;height:24px;border-radius:4px;opacity:.75;z-index:1}
 .tape.t1{left:36px;transform:rotate(-5deg);background:repeating-linear-gradient(45deg,#ffd66b 0 8px,#ffe59a 8px 16px)}
@@ -117,23 +117,24 @@ button,input,textarea{font:inherit;color:inherit}
   .owl.hop{animation:hop .6s ease}@keyframes hop{30%{transform:translateY(-10px) rotate(-6deg)}60%{transform:translateY(0) rotate(4deg)}}}
 
 /* bottom bar */
-.tools{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--paper);border-radius:24px 24px 0 0;
-  padding:8px max(12px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));
-  display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:center;box-shadow:0 -10px 30px -16px rgba(29,43,94,.5)}
-.group{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.helper{display:flex;align-items:center;gap:6px;max-width:360px}
-.owl{width:56px;height:56px;flex:none}
-.bubble{position:relative;background:var(--lemon);border-radius:16px;padding:6px 12px;font-weight:800;font-size:14px;line-height:1.25;color:var(--text)}
+.tools{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--paper);border-radius:18px 18px 0 0;
+  padding:5px max(10px,env(safe-area-inset-right,0px)) calc(5px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));
+  display:flex;flex-wrap:wrap;gap:5px 10px;align-items:center;justify-content:center;box-shadow:0 -10px 30px -16px rgba(29,43,94,.5)}
+.group{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.helper{display:flex;align-items:center;gap:5px;max-width:290px}
+.owl{width:40px;height:40px;flex:none}
+.bubble{position:relative;background:var(--lemon);border-radius:16px;padding:4px 10px;font-weight:800;font-size:12px;line-height:1.2;color:var(--text)}
 .bubble::before{content:"";position:absolute;left:-7px;top:50%;margin-top:-7px;border:7px solid transparent;border-left:0;border-right-color:var(--lemon)}
 .bubble .stars{font-size:20px;letter-spacing:1px;color:#f0a800;display:block;line-height:1}
 .bubble .stars .off{color:#e6dcb8}
 .bubble small{display:block;font-weight:700;font-size:12px;color:var(--muted)}
-.token{width:58px;height:58px;border-radius:18px;background:var(--sun);display:grid;place-items:center;font-weight:900;font-size:36px;line-height:1;cursor:grab;touch-action:none;user-select:none;box-shadow:inset 0 -5px 0 rgba(0,0,0,.14),0 4px 10px -4px rgba(168,107,0,.6);border:0;transition:transform .15s}
+.token{width:42px;height:42px;border-radius:13px;background:var(--sun);display:grid;place-items:center;font-weight:900;font-size:28px;line-height:1;cursor:grab;touch-action:none;user-select:none;box-shadow:inset 0 -4px 0 rgba(0,0,0,.14),0 4px 10px -4px rgba(168,107,0,.6);border:0;transition:transform .15s}
 .token:hover{transform:translateY(-2px) rotate(-3deg)}
 .token:active{cursor:grabbing}
 #tokDiv,.ghost.div{color:var(--sep)}
-#tokStress,.ghost.stress{color:var(--stress);font-size:44px}
-.btn{border:0;background:var(--cloud);border-radius:999px;padding:11px 16px;font-weight:800;font-size:16px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;line-height:1.1;color:var(--text);box-shadow:inset 0 -3px 0 rgba(0,0,0,.08);transition:transform .12s}
+#tokStress{color:var(--stress);font-size:34px}
+.ghost.stress{color:var(--stress);font-size:44px}
+.btn{border:0;background:var(--cloud);border-radius:999px;padding:8px 13px;font-weight:800;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;line-height:1.1;color:var(--text);box-shadow:inset 0 -3px 0 rgba(0,0,0,.08);transition:transform .12s}
 .btn:hover{transform:translateY(-1px)}
 .btn:active{transform:translateY(1px)}
 .btn[data-mode="syl"]{background:var(--mint)}
@@ -143,7 +144,7 @@ button,input,textarea{font:inherit;color:inherit}
 .btn[data-mode="stress"][aria-pressed="true"]{background:var(--stress);color:#fff}
 .btn[data-mode="red"][aria-pressed="true"]{background:var(--red);color:#fff}
 .btn[data-mode="erase"][aria-pressed="true"]{background:#5b6680;color:#fff}
-.btn.main{background:var(--green);color:#fff;font-size:17px;padding:12px 20px}
+.btn.main{background:var(--green);color:#fff;font-size:15px;padding:8px 16px}
 .btn#bAnswers[aria-pressed="true"]{background:var(--sun);color:var(--text)}
 .btn .dot{width:12px;height:12px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:0 0 0 2px #fff}
 
@@ -173,13 +174,13 @@ button,input,textarea{font:inherit;color:inherit}
 .ghost{position:fixed;left:0;top:0;pointer-events:none;z-index:50;width:52px;height:52px;border-radius:16px;background:var(--sun);display:grid;place-items:center;font-weight:900;font-size:34px;box-shadow:0 12px 26px -8px rgba(0,0,0,.45);opacity:.94}
 
 @media (max-width:640px){
-  :root{--U:26px}
+  :root{--U:20px}
   .page{padding:8px 40px 10px 10px}
   .page::after{right:30px}
   .grade{width:38px;height:38px;font-size:22px;right:-2px;border-width:2px}
   .cover .meta{display:none}
   .helper .bubble{display:none}
-  .btn{padding:9px 12px;font-size:14px}
+  .btn{padding:7px 10px;font-size:13px}
   .task{font-size:16px}
 }
 </style>
@@ -196,6 +197,7 @@ button,input,textarea{font:inherit;color:inherit}
     <p class="task" id="taskLine"></p>
     <div class="rows" id="rows"></div>
     <div class="grade" id="grade" hidden></div>
+    <a class="author" href="https://www.instagram.com/dlya.urokov23/" target="_blank" rel="noopener">Разработчик: Курбаниязова Ильмира Климентовна · Instagram @dlya.urokov23</a>
   </main>
 </div>
 
@@ -231,7 +233,6 @@ button,input,textarea{font:inherit;color:inherit}
     <button class="btn" id="bNew">Новые слова</button>
     <button class="btn" id="bSettings" aria-expanded="false" aria-controls="settings">Настройки</button>
   </div>
-  <a class="author" href="https://www.instagram.com/dlya.urokov23/" target="_blank" rel="noopener">Разработчик: Курбаниязова Ильмира Климентовна · Instagram @dlya.urokov23</a>
 </div>
 
 <section class="settings" id="settings" hidden>
@@ -512,7 +513,7 @@ function fit(){
   root.style.setProperty("--barH",barH+"px");
   const narrow=innerWidth<700;
   // room left for the rows once the cover, the task line and the bottom bar are placed
-  const other=document.querySelector(".cover").offsetHeight+8+$("taskLine").offsetHeight+44;
+  const other=document.querySelector(".cover").offsetHeight+8+$("taskLine").offsetHeight+40;
   const avail=innerHeight-barH-20-other;
   // a hidden sample row of average-width words sets one size for this level and screen
   const probe=document.createElement("div");probe.className="row probe";
